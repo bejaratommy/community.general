@@ -1,0 +1,4 @@
+bugfixes:
+  - "github_deploy_key - the module no longer actually deletes the deploy key from the repository when run in check mode
+    with ``state=absent``
+    (https://github.com/ansible-collections/community.general/issues/12348)."
