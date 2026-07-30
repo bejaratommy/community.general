@@ -1,0 +1,5 @@
+bugfixes:
+  - "snap - the module no longer fails with an ``IndexError`` traceback when ``snap info`` does not report a snap name;
+    a ``no snap found`` warning on stdout is now recognized, and any other unparsable output is reported as a
+    descriptive error
+    (https://github.com/ansible-collections/community.general/issues/12375)."

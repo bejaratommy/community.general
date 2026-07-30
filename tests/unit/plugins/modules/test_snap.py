@@ -439,6 +439,54 @@ TEST_SPEC = dict(
             ),
         ),
         dict(
+            id="snap_not_found",
+            input={"name": ["hello-world"]},
+            output=dict(failed=True, msg="Snaps not found: ['\"hello-world\"']."),
+            flags={},
+            mocks=dict(
+                run_command=[
+                    dict(
+                        command=["/testbin/snap", "version"],
+                        environ=default_env,
+                        rc=0,
+                        out=default_version_out,
+                        err="",
+                    ),
+                    dict(
+                        command=["/testbin/snap", "info", "hello-world"],
+                        environ=default_env,
+                        rc=0,
+                        out='warning: no snap found for "hello-world"\n',
+                        err="",
+                    ),
+                ],
+            ),
+        ),
+        dict(
+            id="snap_info_without_name",
+            input={"name": ["hello-world"]},
+            output=dict(failed=True, msg="Cannot determine snap name from 'snap info' output: ''"),
+            flags={},
+            mocks=dict(
+                run_command=[
+                    dict(
+                        command=["/testbin/snap", "version"],
+                        environ=default_env,
+                        rc=0,
+                        out=default_version_out,
+                        err="",
+                    ),
+                    dict(
+                        command=["/testbin/snap", "info", "hello-world"],
+                        environ=default_env,
+                        rc=0,
+                        out="",
+                        err="error: cannot communicate with server: dial unix /run/snapd.socket: connect: refused\n",
+                    ),
+                ],
+            ),
+        ),
+        dict(
             id="set_system_option",
             input={"name": ["system"], "options": ["proxy.http=http://proxy.example.com:3128/"]},
             output=dict(changed=True, options_changed=["system:proxy.http=http://proxy.example.com:3128/"]),
