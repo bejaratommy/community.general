@@ -372,6 +372,8 @@ class Snap(StateModuleHelper):
 
         def process_one(rc, out, err):
             res = [line for line in out.split("\n") if line.startswith("name:")]
+            if not res:
+                self.do_raise(f"Cannot determine snap name from 'snap info' output: {out!r}")
             name = res[0].split()[1]
             return [name]
 
@@ -386,15 +388,14 @@ class Snap(StateModuleHelper):
             return res
 
         def process(rc, out, err):
-            if len(real_snaps) == 1:
-                check_error = err
-                process_ = process_one
-            else:
-                check_error = out
-                process_ = process_many
+            process_ = process_one if len(real_snaps) == 1 else process_many
 
-            if "warning: no snap found" in check_error:
-                snaps_not_found = [x.split()[-1] for x in out.split("\n") if x.startswith("warning: no snap found")]
+            # Depending on the snap version and on how many snaps were queried, the warnings
+            # are written to either stdout or stderr, so both streams must be inspected.
+            snaps_not_found = [
+                line.split()[-1] for line in f"{out}\n{err}".split("\n") if line.startswith("warning: no snap found")
+            ]
+            if snaps_not_found:
                 self.do_raise(f"Snaps not found: {snaps_not_found}.")
             return process_(rc, out, err)
 
