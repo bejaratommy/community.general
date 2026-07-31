@@ -14,7 +14,8 @@ short_description: Creates, updates, or deletes GitLab instance variables
 version_added: 7.1.0
 description:
   - Creates a instance variable if it does not exist.
-  - When a instance variable does exist, its value is updated if the values are different.
+  - When a instance variable does exist and is not hidden, its value is updated if the values are different.
+    When a instance variable does exist and is hidden, its value is updated. In this case, the module is B(not idempotent).
   - Support for instance variables requires GitLab >= 13.0.
   - Variables which are not mentioned in the modules options, but are present on the GitLab instance, either stay (O(purge=false))
     or are deleted (O(purge=true)).
@@ -73,6 +74,14 @@ options:
           - Whether variable value is masked or not.
         type: bool
         default: false
+      hidden:
+        description:
+          - Whether variable value is hidden or not.
+          - Implies C(masked).
+          - Support for hidden values requires GitLab >= 17.4.
+        type: bool
+        default: false
+        version_added: '13.3.0'
       protected:
         description:
           - Whether variable value is protected or not.
@@ -173,6 +182,7 @@ class GitlabInstanceVariables:
             "value": var_obj.get("value"),
             "description": var_obj.get("description"),
             "masked": var_obj.get("masked"),
+            "masked_and_hidden": var_obj.get("hidden"),
             "protected": var_obj.get("protected"),
             "raw": var_obj.get("raw"),
             "variable_type": var_obj.get("variable_type"),
@@ -241,6 +251,8 @@ def native_python_main(this_gitlab, purge, requested_variables, state, module):
             item["protected"] = False
         if item.get("masked") is None:
             item["masked"] = False
+        if item.get("hidden") is None:
+            item["hidden"] = False
         if item.get("raw") is None:
             item["raw"] = False
         if item.get("variable_type") is None:
@@ -307,6 +319,8 @@ def main():
     argument_spec.update(auth_argument_spec())
     argument_spec.update(
         purge=dict(type="bool", default=False),
+        # please mind whenever changing the variables dict to also change module_utils/_gitlab.py's
+        # KNOWN dict in filter_returned_variables or bad evil will happen
         variables=dict(
             type="list",
             elements="dict",
@@ -316,6 +330,7 @@ def main():
                 value=dict(type="str", no_log=True),
                 description=dict(type="str"),
                 masked=dict(type="bool", default=False),
+                hidden=dict(type="bool", default=False),
                 protected=dict(type="bool", default=False),
                 raw=dict(type="bool", default=False),
                 variable_type=dict(type="str", default="env_var", choices=["env_var", "file"]),

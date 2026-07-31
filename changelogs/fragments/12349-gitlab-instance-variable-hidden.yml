@@ -1,0 +1,9 @@
+minor_changes:
+  - "gitlab_instance_variable - add ``hidden`` suboption to ``variables``, which allows to create masked and hidden
+    instance variables on GitLab 17.4 and later
+    (https://github.com/ansible-collections/community.general/issues/12349)."
+bugfixes:
+  - "gitlab_instance_variable - the module no longer considers every existing instance variable as different from the
+    requested one on GitLab versions that return the ``hidden`` attribute, which made every run recreate all variables
+    and, with ``purge=true``, delete them all
+    (https://github.com/ansible-collections/community.general/issues/12349)."
