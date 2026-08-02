@@ -1,0 +1,5 @@
+bugfixes:
+  - 'wakeonlan - the magic packet contained 20 repetitions of the MAC address instead of the 16 required by the
+    specification, resulting in a 126 byte packet instead of a 102 byte one. Hardware that validates the length of
+    the magic packet ignored it
+    (https://github.com/ansible-collections/community.general/issues/11648).'
