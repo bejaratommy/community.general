@@ -90,9 +90,10 @@ def wakeonlan(module, mac, broadcast, port):
     except ValueError:
         module.fail_json(msg=f"Incorrect MAC address format: {mac_orig}")
 
-    # Create payload for magic packet
+    # Create payload for magic packet: a 6 byte header of 0xFF followed by
+    # exactly 16 repetitions of the target MAC address
     data = b""
-    padding = f"FFFFFFFFFFFF{mac * 20}"
+    padding = f"FFFFFFFFFFFF{mac * 16}"
     for i in range(0, len(padding), 2):
         data = b"".join([data, struct.pack("B", int(padding[i : i + 2], 16))])
 
