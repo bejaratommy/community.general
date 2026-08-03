@@ -174,3 +174,37 @@
       - users_bom.list.1.gecos == 'Jeroen Hoekx'
       - users_bom.list.1.uid == '501'
       - users_bom.list.1.gid == '500'
+
+# Create a CSV file where the delimiter is escaped inside a field
+- name: Create CSV file with escaped delimiters
+  ansible.builtin.copy:
+    content: |
+      name:uid:gid:gecos
+      dag:500:500:Dag Wieërs
+      jeroen:501:500:Hoekx\: Jeroen
+    dest: "{{ remote_tmp_dir }}/users_escaped.csv"
+
+- name: Read users from CSV file with escapechar
+  community.general.read_csv:
+    path: "{{ remote_tmp_dir }}/users_escaped.csv"
+    key: name
+    delimiter: ":"
+    escapechar: "\\"
+  register: users_escaped
+
+- ansible.builtin.assert:
+    that:
+      - users_escaped.dict.jeroen.gecos == 'Hoekx: Jeroen'
+      - users_escaped.dict.jeroen.uid == '501'
+      - users_escaped.dict.dag.gecos == 'Dag Wieërs'
+
+- name: Read users from CSV file without escapechar
+  community.general.read_csv:
+    path: "{{ remote_tmp_dir }}/users_escaped.csv"
+    key: name
+    delimiter: ":"
+  register: users_not_escaped
+
+- ansible.builtin.assert:
+    that:
+      - users_not_escaped.dict.jeroen.gecos != 'Hoekx: Jeroen'

@@ -47,6 +47,15 @@ options:
       - When using this parameter, you change the default value used by O(dialect).
       - The default value depends on the dialect used.
     type: bool
+  escapechar:
+    description:
+      - A one-character string used to remove any special meaning from the character following it.
+      - Note that most CSV dialects escape the quoting character by doubling it instead, which this parameter does not
+        affect.
+      - When using this parameter, you change the default value used by O(dialect).
+      - The default value depends on the dialect used.
+    type: str
+    version_added: 13.3.0
 """
 
 EXAMPLES = r"""
@@ -88,11 +97,14 @@ from ansible_collections.community.general.plugins.module_utils._csv import (
 )
 
 
-def from_csv(data, dialect="excel", fieldnames=None, delimiter=None, skipinitialspace=None, strict=None):
+def from_csv(
+    data, dialect="excel", fieldnames=None, delimiter=None, skipinitialspace=None, strict=None, escapechar=None
+):
     dialect_params = {
         "delimiter": delimiter,
         "skipinitialspace": skipinitialspace,
         "strict": strict,
+        "escapechar": escapechar,
     }
 
     try:

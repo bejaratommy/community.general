@@ -67,6 +67,15 @@ options:
       - When using this parameter, you change the default value used by O(dialect).
       - The default value depends on the dialect used.
     type: bool
+  escapechar:
+    description:
+      - A one-character string used to remove any special meaning from the character following it.
+      - Note that most CSV dialects escape the quoting character by doubling it instead, which this parameter does not
+        affect.
+      - When using this parameter, you change the default value used by O(dialect).
+      - The default value depends on the dialect used.
+    type: str
+    version_added: 13.3.0
 seealso:
   - plugin: ansible.builtin.csvfile
     plugin_type: lookup
@@ -165,6 +174,7 @@ def main():
             delimiter=dict(type="str"),
             skipinitialspace=dict(type="bool"),
             strict=dict(type="bool"),
+            escapechar=dict(type="str"),
         ),
         supports_check_mode=True,
     )
@@ -179,6 +189,7 @@ def main():
         "delimiter": module.params["delimiter"],
         "skipinitialspace": module.params["skipinitialspace"],
         "strict": module.params["strict"],
+        "escapechar": module.params["escapechar"],
     }
 
     try:
