@@ -31,6 +31,12 @@
       - "valid_pipe_separated | community.general.from_csv(delimiter='|')  ==  expected_result"
       - "valid_pipe_separated | community.general.from_csv  !=  expected_result"
 
+- name: Parse valid csv input with escaped delimiters with/without escapechar
+  ansible.builtin.assert:
+    that:
+      - 'valid_colon_separated_escaped | community.general.from_csv(delimiter=":", escapechar="\\")  ==  expected_escaped_result'
+      - 'valid_colon_separated_escaped | community.general.from_csv(delimiter=":")  !=  expected_escaped_result'
+
 - name: Register result of invalid csv input when strict=False
   ansible.builtin.debug:
     var: "invalid_comma_separated | community.general.from_csv"

@@ -1,0 +1,7 @@
+minor_changes:
+  - 'read_csv - add ``escapechar`` option, which allows to parse CSV data where the delimiter or the quoting character
+    is escaped by a preceding character instead of being quoted
+    (https://github.com/ansible-collections/community.general/issues/4032).'
+  - 'from_csv filter plugin - add ``escapechar`` option, which allows to parse CSV data where the delimiter or the
+    quoting character is escaped by a preceding character instead of being quoted
+    (https://github.com/ansible-collections/community.general/issues/4032).'

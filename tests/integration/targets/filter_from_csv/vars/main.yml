@@ -29,3 +29,14 @@ expected_result:
   - id: '2'
     name: bar
     role: baz
+valid_colon_separated_escaped: |
+  id:name:role
+  1:foo\:bar:bar
+  2:bar:baz
+expected_escaped_result:
+  - id: '1'
+    name: 'foo:bar'
+    role: bar
+  - id: '2'
+    name: bar
+    role: baz
